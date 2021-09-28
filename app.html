@@ -1,0 +1,119 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS API for JavaScript Tutorials: Search for an address</title>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.21/"></script>
+
+  <script>
+
+  require([
+    "esri/config",
+    "esri/Map",
+    "esri/views/MapView",
+      "esri/rest/locator",
+      "esri/Graphic",
+    "esri/widgets/Search"
+  ], function(esriConfig,Map, MapView,locator, Graphic, Search) {
+
+  esriConfig.apiKey = "AAPK3ad926399ee0453ca62d4a811b15fe7byo55XnvX6YLbzG_iIQjFcJlnaVNrn9sSFmN67nyfPdgGmXx1uLrnd1-s4deUf511";
+
+  const map = new Map({
+      basemap: "arcgis-navigation"
+    });
+
+  const view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [-122.3321,47.6062],
+      zoom: 12
+    });
+
+  const search = new Search({  //Add Search widget
+      view: view
+    });
+
+    view.ui.add(search, "top-right"); //Add to the map
+    
+      view.when(() => {
+
+        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
+        const params = {
+          addresses: [
+            {
+              objectid: 1,
+              address: "Buckingham Palace",
+            },
+            {
+              objectid: 2,
+              address: "Abeno Restaurant London",
+            },
+            {
+              objectid: 3,
+              address: "58 Brewer Street, London, England",
+            },
+          ],
+          
+        };
+
+        locator.addressesToLocations(locatorUrl, params).then(
+          (results) => {
+            if (results.length) {
+              results.forEach((result) =>  {
+                addGraphic(result);
+              });
+            }
+          },
+          function (error) {
+            console.log(error);
+          });
+
+      });
+
+      //Show results
+      function addGraphic(result) {
+        const markerSymbol = {
+          type: "simple-marker",
+          outline: {
+            color: "white",
+            width: 1.5
+          },
+          color: "black",
+          size: "10px"
+        };
+        const graphic = new Graphic({
+          geometry: result.location,
+          symbol: markerSymbol,
+          attributes: result.attributes,
+          popupTemplate: {
+            title: "Address #" + result.attributes.ResultID,
+            content:
+              result.attributes.LongLabel +
+              "<br>" +
+              result.attributes.Type +
+              "<br><br>" +
+              result.location.x.toFixed(5) +
+              ", " +
+              result.location.y.toFixed(5),
+          },
+        });
+        view.graphics.add(graphic);
+      }
+  });
+  </script>
+
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
