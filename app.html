@@ -12,24 +12,28 @@
     }
   </style>
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
+  
   <script src="https://js.arcgis.com/4.21/"></script>
-
   <script>
     var direcciones = [];
     const guardarDireccion = (result) => {
     direcciones.push(result);
     }
+   
   require([
     "esri/config",
     "esri/Map",
     "esri/views/MapView",
       "esri/rest/locator",
       "esri/Graphic",
-    "esri/widgets/Search"
-  ], function(esriConfig,Map, MapView,locator, Graphic, Search) {
+    "esri/widgets/Search",
+    "esri/rest/route",
+    "esri/rest/support/RouteParameters",
+    "esri/rest/support/FeatureSet"
+  ], function(esriConfig,Map, MapView,locator, Graphic, Search, route, RouteParameters, FeatureSet) {
 
-  esriConfig.apiKey = "AAPKd27a52505b51418a8ea36d44de8a2933GYYzBdNKzpbiMs2ozdewZMCTcqaPpLenPhSpny0uoJz_bXLfBySdDX41CdbjUtGK";
-
+  esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
+  const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
   const map = new Map({
       basemap: "arcgis-navigation"
     });
@@ -48,6 +52,7 @@
     view.ui.add(search, "top-right"); //Add to the map
     search.on("select-result", (event) => {
       //event.result.feature.geometry.latitude
+      console.log(event)
       var direc= {
         id: 1,
         direccion: event.result.name
@@ -60,12 +65,13 @@
         const markerSymbol = {
           type: "simple-marker",
           outline: {
-            color: "white",
-            width: 1.5
+            color: "red",
+            width: 5.5
           },
           color: "black",
           size: "10px"
         };
+        console.log('location',result.location)
         const graphic = new Graphic({
           geometry: result.location,
           symbol: markerSymbol,
@@ -103,10 +109,19 @@
         locator.addressesToLocations(locatorUrl, params).then(
           (results) => {
             if (results.length) {
-              results.forEach((result) =>  {
-                guardarDireccion(result);
-                actualizarMapa();
-              });
+              
+              // results.forEach((result) =>  {
+              //   guardarDireccion(result);
+              //   actualizarMapa();
+              // });
+              var cortar=false;
+              for(var i=0;i<results.length;i++){
+                if(results[i].attributes.Country=="USA"&&!cortar){
+                  cortar=true;
+                   guardarDireccion(results[i]);
+                   actualizarMapa();
+                }
+              }
               console.log(direcciones);
             }
           },
@@ -114,11 +129,38 @@
             console.log(error);
           });
     }
+
+    
+    var botonRutear = document.getElementById("botonRutear");
+    botonRutear.addEventListener("click", getRoute);
+    function getRoute(evt) {
+      const routeParams = new RouteParameters({
+        stops: new FeatureSet({
+          features: view.graphics.toArray()
+        }),
+      });
+      route.solve(routeUrl, routeParams)
+        .then(function(data) {
+          data.routeResults.forEach(function(result) {
+            result.route.symbol = {
+              type: "simple-line",
+              color: [5, 150, 255],
+              width: 3
+            };
+            view.graphics.add(result.route);
+          });
+        });
+      }
+      
   });
   </script>
 
 </head>
 <body>
+  <div>
+    <button id='botonRutear'>Presiona</button>
+  </div>
   <div id="viewDiv"></div>
+
 </body>
 </html>
