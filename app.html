@@ -15,7 +15,40 @@
   <script src="https://js.arcgis.com/4.21/"></script>
 
   <script>
+      const params = {
+          adressess: []};
+    const agregarAMapa = (direc) => {
+        
+        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
 
+        params.push({
+            'objectid': direc.id,
+            'address': direc.direccion,
+        })
+
+        locator.addressesToLocations(locatorUrl, params).then(
+          (results) => {
+            if (results.length) {
+              results.forEach((result) =>  {
+                addGraphic(result);
+                guardarDireccion(result);
+              });
+              console.log(direcciones);
+            }
+          },
+          function (error) {
+            console.log(error);
+          });
+    }
+
+    var direcciones = [];
+    const guardarDireccion = (result) => {
+    const direccion = {
+        'Lat':result.location.x,
+        'Lon':result.location.y
+    }
+    direcciones.push(direccion);
+    }
   require([
     "esri/config",
     "esri/Map",
@@ -43,42 +76,9 @@
     });
 
     view.ui.add(search, "top-right"); //Add to the map
-    
-      view.when(() => {
-
-        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
-
-        const params = {
-          addresses: [
-            {
-              objectid: 1,
-              address: "Buckingham Palace",
-            },
-            {
-              objectid: 2,
-              address: "Abeno Restaurant London",
-            },
-            {
-              objectid: 3,
-              address: "58 Brewer Street, London, England",
-            },
-          ],
-          forStorage: false 
-        };
-
-        locator.addressesToLocations(locatorUrl, params).then(
-          (results) => {
-            if (results.length) {
-              results.forEach((result) =>  {
-                addGraphic(result);
-              });
-            }
-          },
-          function (error) {
-            console.log(error);
-          });
-
-      });
+    search.on("select-result", (event) => {
+      console.log(event);
+    });
 
       //Show results
       function addGraphic(result) {
