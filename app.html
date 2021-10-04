@@ -15,40 +15,9 @@
   <script src="https://js.arcgis.com/4.21/"></script>
 
   <script>
-      const params = {
-          adressess: []};
-    const agregarAMapa = (direc,locator) => {
-        
-        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
-
-        params.adressess.push({
-            'objectid': direc.id,
-            'address': direc.direccion,
-        })
-        console.log(params)
-        locator.addressesToLocations(locatorUrl, params).then(
-          (results) => {
-            console.log('b')
-            if (results.length) {
-              results.forEach((result) =>  {
-                addGraphic(result);
-                guardarDireccion(result);
-              });
-              console.log(direcciones);
-            }
-          },
-          function (error) {
-            console.log(error);
-          });
-    }
-
     var direcciones = [];
     const guardarDireccion = (result) => {
-    const direccion = {
-        'Lat':result.location.x,
-        'Lon':result.location.y
-    }
-    direcciones.push(direccion);
+    direcciones.push(result);
     }
   require([
     "esri/config",
@@ -59,7 +28,7 @@
     "esri/widgets/Search"
   ], function(esriConfig,Map, MapView,locator, Graphic, Search) {
 
-  esriConfig.apiKey = "AAPK3ad926399ee0453ca62d4a811b15fe7byo55XnvX6YLbzG_iIQjFcJlnaVNrn9sSFmN67nyfPdgGmXx1uLrnd1-s4deUf511";
+  esriConfig.apiKey = "AAPKd27a52505b51418a8ea36d44de8a2933GYYzBdNKzpbiMs2ozdewZMCTcqaPpLenPhSpny0uoJz_bXLfBySdDX41CdbjUtGK";
 
   const map = new Map({
       basemap: "arcgis-navigation"
@@ -115,6 +84,36 @@
         });
         view.graphics.add(graphic);
       }
+      const params = {
+        addresses: []};
+      const actualizarMapa = () => {
+        direcciones.forEach((result) => {
+          addGraphic(result);
+        })
+      }
+      const agregarAMapa = (direc,locator) => {
+        
+        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
+        params.addresses.push({
+            'objectid': direc.id,
+            'address': direc.direccion,
+        })
+        console.log(params)
+        locator.addressesToLocations(locatorUrl, params).then(
+          (results) => {
+            if (results.length) {
+              results.forEach((result) =>  {
+                guardarDireccion(result);
+                actualizarMapa();
+              });
+              console.log(direcciones);
+            }
+          },
+          function (error) {
+            console.log(error);
+          });
+    }
   });
   </script>
 
