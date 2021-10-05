@@ -15,40 +15,9 @@
   <script src="https://js.arcgis.com/4.21/"></script>
 
   <script>
-      const params = {
-          adressess: []};
-    const agregarAMapa = (direc,locator) => {
-        
-        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
-
-        params.adressess.push({
-            'objectid': direc.id,
-            'address': direc.direccion,
-        })
-        console.log(params)
-        locator.addressesToLocations(locatorUrl, params).then(
-          (results) => {
-            console.log('b')
-            if (results.length) {
-              results.forEach((result) =>  {
-                addGraphic(result);
-                guardarDireccion(result);
-              });
-              console.log(direcciones);
-            }
-          },
-          function (error) {
-            console.log(error);
-          });
-    }
-
     var direcciones = [];
     const guardarDireccion = (result) => {
-    const direccion = {
-        'Lat':result.location.x,
-        'Lon':result.location.y
-    }
-    direcciones.push(direccion);
+    direcciones.push(result);
     }
   require([
     "esri/config",
@@ -56,21 +25,33 @@
     "esri/views/MapView",
       "esri/rest/locator",
       "esri/Graphic",
-    "esri/widgets/Search"
-  ], function(esriConfig,Map, MapView,locator, Graphic, Search) {
+    "esri/widgets/Search",
+    "esri/rest/route",
+    "esri/rest/support/RouteParameters",
+    "esri/rest/support/FeatureSet"
+  ], function(esriConfig,Map, MapView,locator, Graphic, Search, route, RouteParameters, FeatureSet) {
 
-  esriConfig.apiKey = "AAPK8f543d72a2ae45d1b378fc66ee3305b0goCtP719yANromHYwU7BYXd2dJ9EK2wV9JLPX1-gZemRFkUAHD3wWZSiiRBB65R4";
-  //AAPK3ad926399ee0453ca62d4a811b15fe7byo55XnvX6YLbzG_iIQjFcJlnaVNrn9sSFmN67nyfPdgGmXx1uLrnd1
+  //esriConfig.apiKey = "AAPK8f543d72a2ae45d1b378fc66ee3305b0goCtP719yANromHYwU7BYXd2dJ9EK2wV9JLPX1-gZemRFkUAHD3wWZSiiRBB65R4";
+  esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
+  //esriConfig.apiKey = "AAPK3ad926399ee0453ca62d4a811b15fe7byo55XnvX6YLbzG_iIQjFcJlnaVNrn9sSFmN67nyfPdgGmXx1uLrnd1";
+  //esriConfig.apiKey = "AAPKd27a52505b51418a8ea36d44de8a2933GYYzBdNKzpbiMs2ozdewZMCTcqaPpLenPhSpny0uoJz_bXLfBySdDX41CdbjUtGK";
+
   const map = new Map({
       basemap: "arcgis-navigation"
     });
 
-  const view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [-122.3321,47.6062],
-      zoom: 12
-    });
+
+
+
+    const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-122.3321,47.6062],
+        zoom: 12
+      });
+
+
+
 
   const search = new Search({  //Add Search widget
       view: view
@@ -115,7 +96,94 @@
         });
         view.graphics.add(graphic);
       }
+      const params = {
+        addresses: []};
+      const actualizarMapa = () => {
+        direcciones.forEach((result) => {
+          addGraphic(result);
+        })
+      }
+      const agregarAMapa = (direc,locator) => {
+        
+        const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
+        params.addresses.push({
+            'objectid': direc.id,
+            'address': direc.direccion,
+        })
+        console.log(params)
+        locator.addressesToLocations(locatorUrl, params).then(
+          (results) => {
+            if (results.length) {
+              results.forEach((result) =>  {
+                guardarDireccion(result);
+                actualizarMapa();
+              });
+              console.log(direcciones);
+            }
+          },
+          function (error) {
+            console.log(error);
+          });
+    }
+    
+  
+  
+  
+    const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
+
+
+      view.on("click", function(event){
+      if (view.graphics.length === 0) {
+        addGraphic2("origin", event.mapPoint);
+        } else if (view.graphics.length === 1) {
+          addGraphic2("destination", event.mapPoint);
+
+          getRoute(); // Call the route service
+
+        } else {
+          view.graphics.removeAll();
+          addGraphic2("origin",event.mapPoint);
+        }
+    });
+
+    function addGraphic2(type, point) {
+        const graphic = new Graphic({
+          symbol: {
+            type: "simple-marker",
+            color: (type === "origin") ? "white" : "black",
+            size: "8px"
+          },
+        geometry: point
+      });
+        view.graphics.add(graphic);
+    };
+
+    function getRoute() {
+      const routeParams = new RouteParameters({
+        stops: new FeatureSet({
+          features: direcciones
+          //features: view.graphics.toArray()
+
+        }),
+      });
+      console.log(view.graphics.toArray());
+      route.solve(routeUrl, routeParams)
+        .then(function(data) {
+          data.routeResults.forEach(function(result) {
+            result.route.symbol = {
+              type: "simple-line",
+              color: [5, 150, 255],
+              width: 3
+            };
+            view.graphics.add(result.route);
+          });
+      });
+    };
+
   });
+
+  
   </script>
 
 </head>
