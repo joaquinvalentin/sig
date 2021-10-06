@@ -52,10 +52,10 @@
     view.ui.add(search, "top-right"); //Add to the map
     search.on("select-result", (event) => {
       //event.result.feature.geometry.latitude
-      console.log(event)
+      console.log('event', event.result.feature.attributes)
       var direc= {
-        id: 1,
-        direccion: event.result.name
+        id: direcciones.length,
+        direccion: event.result.feature.attributes.Match_addr +',' + event.result.feature.attributes.StAddr
       }
       agregarAMapa(direc,locator);
     });
@@ -90,22 +90,21 @@
         });
         view.graphics.add(graphic);
       }
-      const params = {
-        addresses: []};
+      
       const actualizarMapa = () => {
         direcciones.forEach((result) => {
           addGraphic(result);
         })
       }
       const agregarAMapa = (direc,locator) => {
-        
+        const params = {
+        addresses: []};
         const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
 
         params.addresses.push({
             'objectid': direc.id,
             'address': direc.direccion,
         })
-        console.log(params)
         locator.addressesToLocations(locatorUrl, params).then(
           (results) => {
             if (results.length) {
@@ -139,8 +138,12 @@
           features: view.graphics.toArray()
         }),
       });
+      
       route.solve(routeUrl, routeParams)
         .then(function(data) {
+          
+      console.log('pitocico')
+      console.log(routeParams)
           data.routeResults.forEach(function(result) {
             result.route.symbol = {
               type: "simple-line",
