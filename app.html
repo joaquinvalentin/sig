@@ -4,22 +4,34 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Obligatorio 2</title>
   <style>
-    html, body, #viewDiv {
+    html, body {
       padding: 0;
       margin: 0;
       height: 100%;
       width: 100%;
+      display: flex;
+    }
+    #viewDiv {
+      width: 80%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
     }
   </style>
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
   
+  <link rel="stylesheet" type="text/css" href="estilo.css">
   <script src="https://js.arcgis.com/4.21/"></script>
+  
+  <script type="text/javascript" src="mapa.js"></script>
+  <script type="text/javascript" src="rutear.js"></script>
   <script>
     var direcciones = [];
     const guardarDireccion = (result) => {
     direcciones.push(result);
     }
-  
+   
+    /*
   require([
     "esri/config",
     "esri/Map",
@@ -205,7 +217,7 @@ var features= [
       });
     }
   });
-
+*/
 
   </script>
 
@@ -213,10 +225,21 @@ var features= [
 
 </head>
 <body>
-  <div>
-    <button id='botonRutear'>Presiona</button>
+  
+  <div id="viewDiv">
   </div>
-  <div id="viewDiv"></div>
-
+  <div class="barraDerecha">
+    <div id=busqueda class="busqueda">
+      <input type="text" placeholder="Ingrese direccion">
+    </div>
+    <div id="listaPuntos" class = "listaPuntos">
+      
+    </div>
+    <div class= "botones">
+      <button class="boton" onclick="getRoute(view)">Rutear</button>
+      <button class="boton">Simular ruta</button>
+    </div>
+  </div>
+  
 </body>
 </html>

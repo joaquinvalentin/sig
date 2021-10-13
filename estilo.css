@@ -1,0 +1,47 @@
+.barraDerecha {
+    width: 20%;
+    background-color: beige;
+    top:0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between ;
+    height: 80%;
+}
+
+.botones {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 90%;
+}
+
+.boton{
+    background-color: burlywood;
+}
+
+.busqueda {
+    display: flex;
+    width: 100%;
+    height: 10px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.mapa {
+    width:80%;
+    height: 1000px;
+}
+
+.tablaPuntos {
+    border-radius: 2px;
+    border-color: blue  ;
+    border-width: 5px;
+    border-style: double;
+}
+
+.listaPuntos {
+    display: flex;
+    align-items: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
