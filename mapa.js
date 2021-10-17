@@ -75,6 +75,19 @@ function guardarData(routeId) {
       request.open('POST', requestUrl, false); 
       request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       request.send(params);
+      fetch(requestUrl, {
+        method : "POST",
+        params: `adds=${JSON.stringify([addData])}&f=json`,
+        // -- or --
+        // body : JSON.stringify({
+            // user : document.getElementById('user').value,
+            // ...
+        // })
+    }).then(
+        response => response.text() // .json(), etc.
+        // same as function(response) {return response.text();}
+    );
+    }
   }
 
 function guardarPolilinea(direction) {
