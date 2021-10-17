@@ -15,6 +15,13 @@
     width: 90%;
 }
 
+.botonesArriba {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    flex-direction: row;
+}
+
 .boton{
     background-color: burlywood;
 }
@@ -44,4 +51,19 @@
     align-items: flex-start;
     align-items: center;
     flex-direction: column;
+}
+
+.listaRutas {
+    display: flex;
+    align-items: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.ruta {
+    border-radius: 2px;
+    border-color: green  ;
+    border-width: 5px;
+    border-style: double;
+    width: 100%;
 }
