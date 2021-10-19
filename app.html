@@ -19,10 +19,10 @@
     }
   </style>
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   
   <link rel="stylesheet" type="text/css" href="estilo.css">
   <script src="https://js.arcgis.com/4.21/"></script>
-  
   <script type="text/javascript" src="mapa.js"></script>
   <script type="text/javascript" src="rutear.js"></script>
   <script>
@@ -229,9 +229,10 @@ var features= [
   <div id="viewDiv">
   </div>
   <div class="barraDerecha">
+    <div class="barraArriba">
     <div class = "botonesArriba">
-      <button onclick="getRutasAnteriores()">Listar rutas anteriores</button>
-      <button onclick="listarPuntos()">Listar puntos</button>
+        <button id="botonRA" class="botonito w3-bar-item w3-button " onclick="getRutasAnteriores()">Rutas</button>
+        <button id="botonLP" class="botonito w3-bar-item w3-button w3-red" onclick="listarPuntos()">Puntos</button>
   </div>
     <div id="listaPuntos" class = "listaPuntos">
       
@@ -239,11 +240,14 @@ var features= [
     <div id="rutasAnteriores" class = "listaRutas">
       
     </div>
+  </div>
+  <div class="barraAbajo">
     <div class= "botones">
-      <button class="boton" onclick="getRoute(view)">Rutear</button>
-      <button class="boton">Simular ruta</button>
+      <button class="w3-button w3-deep-purple boton" onclick="getRoute(view)">Rutear</button>
+      <button class="w3-button w3-deep-purple boton">Simular ruta</button>
     </div>
   </div>
+</div>
   
 </body>
 </html>

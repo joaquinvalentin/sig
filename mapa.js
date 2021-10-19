@@ -5,6 +5,8 @@ var direcciones = [];
 var puntos = [];
 var variableRouteParameters= {};
 var mapa= {};
+var capaEventos ={};
+var capaRuta={};
 
 function asignarNuevosIndices(indice) {
   var nuevoIndice, actual;
@@ -27,7 +29,7 @@ function eliminarPuntoHTML(indice){
   //borro un elemento a partir de la posicion: indice.
   direcciones.splice(indice,1);
   // elimina todos los points view.graphics.removeAll();
-  view.graphics.remove(puntos[indice]);
+  capaEventos.remove(puntos[indice]);
   puntos.splice(indice, 1);
   asignarNuevosIndices(indice);
 }
@@ -37,7 +39,7 @@ function guardarEnLista(direccion) {
   var nuevo = document.createElement("div");
   nuevo.setAttribute("id", "div" + (direcciones.length-1));
   nuevo.innerHTML =
-            '<table class="tablaPuntos">' +
+            '<table class="w3-card tablaPuntos">' +
               '<tbody>' +
                 '<tr>' +
                 `<td >${direccion.address}</td>` +
@@ -65,7 +67,8 @@ function guardarData(routeId) {
       var atributos = {};
       var addData = {};
       addData.geometry = direcciones[i].location;
-      atributos.description = direcciones[i].attributes;
+      atributos.description = "Grupo2";
+      atributos.event_type= 0;
       atributos.eventid = routeId;
       addData.attributes = atributos;
       var params = `adds=${JSON.stringify([addData])}&f=json`;
@@ -75,18 +78,6 @@ function guardarData(routeId) {
       request.open('POST', requestUrl, false); 
       request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       request.send(params);
-      fetch(requestUrl, {
-        method : "POST",
-        params: `adds=${JSON.stringify([addData])}&f=json`,
-        // -- or --
-        // body : JSON.stringify({
-            // user : document.getElementById('user').value,
-            // ...
-        // })
-    }).then(
-        response => response.text() // .json(), etc.
-        // same as function(response) {return response.text();}
-    );
     }
   }
 
@@ -108,6 +99,7 @@ function guardarPolilinea(direction) {
   
     if (request.status === 200) {
       var persistResponse = JSON.parse(request.response);
+      console.log(persistResponse);
       guardarData(persistResponse.addResults[0].objectId);
     }
     else {
@@ -126,12 +118,10 @@ function guardarPolilinea(direction) {
         const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
         const routeParams = new RouteParameters({
         stops: new FeatureSet({
-            features: view.graphics.toArray(),
+            features: capaEventos.graphics.toArray(),
         }),
         findBestSequence: true
         })
-
-    
     route.solve(routeUrl, routeParams)
     .then(function(data) { 
       data.routeResults.forEach(async function(result) {
@@ -143,12 +133,8 @@ function guardarPolilinea(direction) {
         const rute = result.route.geometry.paths;
         guardarPolilinea(rute);      
         //Traer Feature Service
-        const ruta = new FeatureLayer({
-          url: "http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0"
-        });
-        mapa.add(ruta);
 
-        view.graphics.add(result.route);
+        capaRuta.add(result.route);
       });
     });
 })
@@ -163,13 +149,14 @@ require([
     "esri/Map",
     "esri/views/MapView",
       "esri/rest/locator",
+      "esri/layers/GraphicsLayer",
       "esri/Graphic",
     "esri/widgets/Search",
     "esri/rest/route",
     "esri/rest/support/RouteParameters",
     "esri/rest/support/FeatureSet",
     "esri/layers/FeatureLayer"
-  ], function(esriConfig,Map, MapView,locator, Graphic, Search, route, RouteParameters, FeatureSet, FeatureLayer) {
+  ], function(esriConfig,Map, MapView,locator,GraphicsLayer, Graphic, Search, route, RouteParameters, FeatureSet, FeatureLayer) {
   
   esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
   const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
@@ -195,6 +182,9 @@ require([
     }
     agregarAMapa(direc,locator);
   });
+  capaEventos = new GraphicsLayer();
+  capaRuta=new GraphicsLayer();
+  mapa.addMany([capaEventos,capaRuta]);
 
     //Show results
   function addGraphic(result) {
@@ -224,7 +214,7 @@ require([
           result.location.y.toFixed(5),
       },
     });
-    view.graphics.add(graphic);
+    capaEventos.add(graphic);
     puntos.push(graphic);
   }
 
@@ -258,7 +248,51 @@ require([
   }
 }
 );
-
+function cargarPuntos(idRuta) {
+  var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/query?where=eventId=${idRuta}&f=json`
+  var request = new XMLHttpRequest();
+  request.open('POST', requestUrl, false); 
+  request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  request.send(null);
+  var respuesta= JSON.parse(request.response);
+  for (var i = 0; i < respuesta.features.length; i++) {
+    var coord = {};
+    var direccion ={};
+    coord.x = respuesta.features[i].geometry.x;
+    coord.y = respuesta.features[i].geometry.y;
+    direccion.location = coord;
+    direccion.attribute = respuesta.features[i].attributes.description;
+    direccion.address="";
+    direcciones.push(direccion);
+    guardarEnLista(direccion);
+    require([
+      "esri/Graphic",
+      ], function(Graphic){
+          const markerSymbol = {
+            type: "simple-marker",
+            outline: {
+              color: "red",
+              width: 5.5
+            },
+            color: "black",
+            size: "10px"
+          };
+          
+          var punto = {
+            type: "point",
+            x: direccion.location.x,
+            y: direccion.location.y
+          }
+          
+          const graphic = new Graphic({
+            geometry: punto,
+            symbol: markerSymbol,
+          });
+          capaEventos.add(graphic);
+          puntos.push(graphic);
+        });
+  }
+}
 async function cargarRuta(id){
   var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${id}&f=json`;
   var request = new XMLHttpRequest();
@@ -270,6 +304,7 @@ async function cargarRuta(id){
     console.log('dale facha', response);
     if (response) {
       rutaCargar= response.features[0].geometry.paths;
+      cargarPuntos(id);
     }
     else{
       console.log('error');
@@ -291,12 +326,12 @@ async function cargarRuta(id){
         geometry: polyline,
         symbol: lineSymbol
       });
-      view.graphics.add(polylineGraphic);
+      capaRuta.add(polylineGraphic);
     });
 }
 
 async function listarRutas(featuresIds) {
-  for (var i = 0; i < featuresIds.length; i++) {
+  for (var i = 0; i < 1/*featuresIds.length*/; i++) {
       var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${featuresIds[i]}&f=json`;
         var request = new XMLHttpRequest();
         request.open("GET", requestUrl, false);
@@ -311,7 +346,7 @@ async function listarRutas(featuresIds) {
       //aca nos quedamos. nos falta ver los ids.
       var divRutas = document.getElementById("rutasAnteriores");
       var divNuevo = document.createElement("div");
-      divNuevo.innerHTML = ` <div class="ruta"> `+
+      divNuevo.innerHTML = ` <div class="ruta w3-card"> `+
                               `${nombreRuta}`+ ` ` +
                               `<button id="${featuresIds[i]}" onClick="cargarRuta(${featuresIds[i]})">Cargar</button> `+
                               `</div>
@@ -332,16 +367,30 @@ async function consultarRutas() {
     console.log('reqrep', requestResponse);
     console.log(requestResponse.features);
     if (requestResponse) {
-      listarRutas(requestResponse.objectIds.reverse());
+      var listaOrd =requestResponse.objectIds.sort((function(a, b) {
+        return b - a;
+      }));
+      listarRutas(listaOrd);
     }
   }
 }
 
 function getRutasAnteriores() {
+  
+  document.getElementById("rutasAnteriores").innerHTML='';
+  direcciones=[];
+  document.getElementById("rutasAnteriores").style.display = "none";
   document.getElementById("listaPuntos").style.display = "none";
+  document.getElementById("botonLP").className="botonito w3-bar-item w3-button";
+  document.getElementById("botonRA").className+=" w3-red";
+  document.getElementById("rutasAnteriores").style.display = "block";
   consultarRutas();
 }
 
 function listarPuntos() {
+  document.getElementById("rutasAnteriores").style.display = "none";
+  document.getElementById("botonRA").className= ("botonito w3-bar-item w3-button");
+  document.getElementById("botonLP").className+=" w3-red";
   document.getElementById("listaPuntos").style.display = "block";
+  
 }
