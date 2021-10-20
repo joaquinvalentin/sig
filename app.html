@@ -24,7 +24,7 @@
   <link rel="stylesheet" type="text/css" href="estilo.css">
   <script src="https://js.arcgis.com/4.21/"></script>
   <script type="text/javascript" src="mapa.js"></script>
-  <script type="text/javascript" src="rutear.js"></script>
+  <script type="text/javascript" src="simulacion.js"></script>
   <script>
     var direcciones = [];
     const guardarDireccion = (result) => {
@@ -244,7 +244,7 @@ var features= [
   <div class="barraAbajo">
     <div class= "botones">
       <button class="w3-button w3-deep-purple boton" onclick="getRoute(view)">Rutear</button>
-      <button class="w3-button w3-deep-purple boton">Simular ruta</button>
+      <button class="w3-button w3-deep-purple boton" onclick="simular()">Simular ruta</button>
     </div>
   </div>
 </div>

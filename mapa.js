@@ -7,6 +7,8 @@ var variableRouteParameters= {};
 var mapa= {};
 var capaEventos ={};
 var capaRuta={};
+var rutaSimulacion = [] ;
+var capaSimulacion={};
 
 function asignarNuevosIndices(indice) {
   var nuevoIndice, actual;
@@ -99,7 +101,6 @@ function guardarPolilinea(direction) {
   
     if (request.status === 200) {
       var persistResponse = JSON.parse(request.response);
-      console.log(persistResponse);
       guardarData(persistResponse.addResults[0].objectId);
     }
     else {
@@ -131,6 +132,7 @@ function guardarPolilinea(direction) {
           width: 3
         };
         const rute = result.route.geometry.paths;
+      rutaSimulacion= rute;
         guardarPolilinea(rute);      
         //Traer Feature Service
 
@@ -184,7 +186,8 @@ require([
   });
   capaEventos = new GraphicsLayer();
   capaRuta=new GraphicsLayer();
-  mapa.addMany([capaEventos,capaRuta]);
+  capaSimulacion=new GraphicsLayer();
+  mapa.addMany([capaEventos,capaRuta,capaSimulacion]);
 
     //Show results
   function addGraphic(result) {
@@ -301,9 +304,9 @@ async function cargarRuta(id){
   request.send(null);
   if (request.status === 200) {
     var response = await JSON.parse(request.response);
-    console.log('dale facha', response);
     if (response) {
       rutaCargar= response.features[0].geometry.paths;
+      rutaSimulacion= rutaCargar;
       cargarPuntos(id);
     }
     else{
@@ -338,7 +341,6 @@ async function listarRutas(featuresIds) {
         request.send(null);
         if (request.status === 200) {
           var requestResponse = await JSON.parse(request.response);
-          console.log('jejejeje', requestResponse);
           if (requestResponse) {
             var nombreRuta= requestResponse.features[0].attributes.notes;
           }
@@ -364,8 +366,6 @@ async function consultarRutas() {
   request.send(null);
   if (request.status === 200) {
     var requestResponse = await JSON.parse(request.response);
-    console.log('reqrep', requestResponse);
-    console.log(requestResponse.features);
     if (requestResponse) {
       var listaOrd =requestResponse.objectIds.sort((function(a, b) {
         return b - a;
