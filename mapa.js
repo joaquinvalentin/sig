@@ -76,7 +76,7 @@ function guardarData(routeId) {
       var params = `adds=${JSON.stringify([addData])}&f=json`;
       var request = new XMLHttpRequest();
       
-      var requestUrl = "http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/applyEdits"
+      var requestUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/applyEdits"
       request.open('POST', requestUrl, false); 
       request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       request.send(params);
@@ -94,7 +94,7 @@ function guardarPolilinea(direction) {
     addData.attributes = atributos;
     var params = `adds=${JSON.stringify([addData])}&f=json`;
     var request = new XMLHttpRequest();
-    var requestUrl = "http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/applyEdits"
+    var requestUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/applyEdits"
     request.open('POST', requestUrl, false); 
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(params);
@@ -252,7 +252,7 @@ require([
 }
 );
 function cargarPuntos(idRuta) {
-  var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/query?where=eventId=${idRuta}&f=json`
+  var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/query?where=eventId=${idRuta}&f=json`
   var request = new XMLHttpRequest();
   request.open('POST', requestUrl, false); 
   request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -297,7 +297,7 @@ function cargarPuntos(idRuta) {
   }
 }
 async function cargarRuta(id){
-  var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${id}&f=json`;
+  var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${id}&f=json`;
   var request = new XMLHttpRequest();
   request.open("GET", requestUrl, false);
   var rutaCargar;
@@ -335,7 +335,7 @@ async function cargarRuta(id){
 
 async function listarRutas(featuresIds) {
   for (var i = 0; i < 1/*featuresIds.length*/; i++) {
-      var requestUrl = `http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${featuresIds[i]}&f=json`;
+      var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${featuresIds[i]}&f=json`;
         var request = new XMLHttpRequest();
         request.open("GET", requestUrl, false);
         request.send(null);
@@ -360,7 +360,7 @@ async function listarRutas(featuresIds) {
 
 async function consultarRutas() {
 
-  var requestUrl = 'http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=notes%20SIMILAR%20TO%20%27Grupo2%25%27&returnIdsOnly=true&f=json';
+  var requestUrl = 'http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=notes%20SIMILAR%20TO%20%27Grupo2%25%27&returnIdsOnly=true&f=json';
   var request = new XMLHttpRequest();
   request.open("GET", requestUrl, false);
   request.send(null);

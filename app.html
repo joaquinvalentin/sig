@@ -13,7 +13,7 @@
     }
     #viewDiv {
       width: 80%;
-      height: 100%;
+      height: 89%;
       display: flex;
       flex-direction: row;
     }
@@ -23,6 +23,7 @@
   
   <link rel="stylesheet" type="text/css" href="estilo.css">
   <script src="https://js.arcgis.com/4.21/"></script>
+
   <script type="text/javascript" src="mapa.js"></script>
   <script type="text/javascript" src="simulacion.js"></script>
   <script>
@@ -246,6 +247,14 @@ var features= [
       <button class="w3-button w3-deep-purple boton" onclick="getRoute(view)">Rutear</button>
       <button class="w3-button w3-deep-purple boton" onclick="simular()">Simular ruta</button>
     </div>
+  </div>
+</div>
+<div class="barraCondado">
+  <div class="datosCondado">
+    <label>CONDADOS: </label><label id="nombreCondado"></label>
+  </div>
+  <div class="datosCondado">
+    <label>POBLACION: </label><label id="poblacionTotal"></label>
   </div>
 </div>
   
