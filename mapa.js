@@ -157,7 +157,7 @@ require([
     "esri/rest/route",
     "esri/rest/support/RouteParameters",
     "esri/rest/support/FeatureSet",
-    "esri/layers/FeatureLayer"
+    "esri/layers/FeatureLayer",
   ], function(esriConfig,Map, MapView,locator,GraphicsLayer, Graphic, Search, route, RouteParameters, FeatureSet, FeatureLayer) {
   
   esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
@@ -171,11 +171,13 @@ require([
       center: [-122.3321,47.6062],
       zoom: 12
     });
-    
+  
+  
   const search = new Search({  //Add Search widget
     view: view
   });
 
+  
   view.ui.add(search, "top-right"); //Add to the map
   search.on("select-result", (event) => {
     var direc= {
@@ -251,6 +253,7 @@ require([
   }
 }
 );
+
 function cargarPuntos(idRuta) {
   var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/query?where=eventId=${idRuta}&f=json`
   var request = new XMLHttpRequest();
@@ -296,6 +299,7 @@ function cargarPuntos(idRuta) {
         });
   }
 }
+
 async function cargarRuta(id){
   var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${id}&f=json`;
   var request = new XMLHttpRequest();
@@ -393,4 +397,35 @@ function listarPuntos() {
   document.getElementById("botonLP").className+=" w3-red";
   document.getElementById("listaPuntos").style.display = "block";
   
+}
+
+function pdf() {
+  require(
+    ["esri/widgets/Print",
+    "esri/rest/support/PrintTemplate",
+    "esri/rest/support/PrintParameters",
+    "esri/rest/print"
+    ], function(Print, PrintTemplate, PrintParameters, PrintAPI) {
+
+    const url = "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+    
+    const template = new PrintTemplate({
+      format: "pdf",
+      exportOptions: {
+        dpi: 300
+      },
+      layout: "a4-portrait",
+      layoutOptions: {
+        titleText: "SIG 2021 - Grupo 2",
+        authorText: "Nicolas Fripp \n Joaquin Valentin"
+      }
+    });
+    
+    const params = new PrintParameters({
+      view: view,
+      template: template
+    });
+    
+    PrintAPI.execute(url, params).then(res => window.open(res.url, '_blank').focus())
+  })
 }
