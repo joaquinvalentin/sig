@@ -10,7 +10,10 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
+    padding-left: 20px;
     width: 90%;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .botonesArriba {
@@ -72,25 +75,50 @@
 
 .barraArriba {
     display: flex;
-    height: 80%;
+    height: 70%;
     flex-direction: column;
     align-items: flex-start;
 }
 
 .barraAbajo {
     display: flex;
-    height: 10%;
+    height: 8%;
 }
 
 .barraCondado {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top:90%;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .datosCondado {
     display: flex;
     flex-direction: row;
-    font-size: 30px;
+    font-size: 20px;
+    margin-right: 100px;
+    margin-left: 20px;
+
+}
+
+/* Dashed border */
+hr.dashed {
+    border-top: 3px dashed #bbb;
+}
+
+/* Dotted border */
+hr.dotted {
+border-top: 3px dotted #bbb;
+}
+
+/* Solid border */
+hr.solid {
+border-top: 3px solid #bbb;
+margin-top: 30px;
+margin-bottom: 30px;
+
+}
+
+/* Rounded border */
+hr.rounded {
+border-top: 1px solid #bbb;
+border-radius: 5px;
 }
