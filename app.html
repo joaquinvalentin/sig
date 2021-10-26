@@ -1,269 +1,95 @@
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Obligatorio 2</title>
-  <style>
-    html, body {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      width: 100%;
-      display: flex;
-    }
-    #viewDiv {
-      width: 80%;
-      height: 99%;
-      display: flex;
-      flex-direction: row;
-    }
-  </style>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  
-  <link rel="stylesheet" type="text/css" href="estilo.css">
-  <script src="https://js.arcgis.com/4.21/"></script>
-
-  <script type="text/javascript" src="mapa.js"></script>
-  <script type="text/javascript" src="simulacion.js"></script>
-  <script>
-    var direcciones = [];
-    const guardarDireccion = (result) => {
-    direcciones.push(result);
-    }
-   
-    /*
-  require([
-    "esri/config",
-    "esri/Map",
-    "esri/views/MapView",
-      "esri/rest/locator",
-      "esri/Graphic",
-    "esri/widgets/Search",
-    "esri/rest/route",
-    "esri/rest/support/RouteParameters",
-    "esri/rest/support/FeatureSet",
-    "esri/layers/FeatureLayer"
-  ], function(esriConfig,Map, MapView,locator, Graphic, Search, route, RouteParameters, FeatureSet, FeatureLayer) {
-  
-  esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
-  
-  
-  //esriConfig.apiKey = "AAPK8f543d72a2ae45d1b378fc66ee3305b0goCtP719yANromHYwU7BYXd2dJ9EK2wV9JLPX1-gZemRFkUAHD3wWZSiiRBB65R4";
-  //esriConfig.apiKey = "AAPK3ad926399ee0453ca62d4a811b15fe7byo55XnvX6YLbzG_iIQjFcJlnaVNrn9sSFmN67nyfPdgGmXx1uLrnd1";
-  //esriConfig.apiKey = "AAPKd27a52505b51418a8ea36d44de8a2933GYYzBdNKzpbiMs2ozdewZMCTcqaPpLenPhSpny0uoJz_bXLfBySdDX41CdbjUtGK";
-
-  const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
-  const map = new Map({
-      basemap: "arcgis-navigation"
-    });
-
-  const view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [-122.3321,47.6062],
-      zoom: 12
-    });
-
-  const search = new Search({  //Add Search widget
-      view: view
-    });
-
-    view.ui.add(search, "top-right"); //Add to the map
-    search.on("select-result", (event) => {
-      console.log('event', event.result.feature.attributes)
-      var direc= {
-        id: direcciones.length,
-        direccion: event.result.feature.attributes.Match_addr +',' + event.result.feature.attributes.StAddr
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <title>Obligatorio 2</title>
+    <style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
       }
-      agregarAMapa(direc,locator);
-    });
+      #viewDiv {
+        width: 80%;
+        height: 99%;
+        display: flex;
+        flex-direction: row;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.21/esri/themes/light/main.css"
+    />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
 
-      //Show results
-    function addGraphic(result) {
-      const markerSymbol = {
-        type: "simple-marker",
-        outline: {
-          color: "red",
-          width: 5.5
-        },
-        color: "black",
-        size: "10px"
+    <link rel="stylesheet" type="text/css" href="estilo.css" />
+    <script src="https://js.arcgis.com/4.21/"></script>
+
+    <script type="text/javascript" src="mapa.js"></script>
+    <script type="text/javascript" src="simulacion.js"></script>
+    <script>
+      var direcciones = [];
+      const guardarDireccion = (result) => {
+        direcciones.push(result);
       };
-      console.log('location',result.location)
-      const graphic = new Graphic({
-        geometry: result.location,
-        symbol: markerSymbol,
-        attributes: result.attributes,
-        popupTemplate: {
-          title: "Address #" + result.attributes.ResultID,
-          content:
-            result.attributes.LongLabel +
-            "<br>" +
-            result.attributes.Type +
-            "<br><br>" +
-            result.location.x.toFixed(5) +
-            ", " +
-            result.location.y.toFixed(5),
-        },
-      });
-      view.graphics.add(graphic);
-    }
-      
-    const actualizarMapa = () => {
-      direcciones.forEach((result) => {
-        addGraphic(result);
-      })
-    }
+    </script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+    <div class="barraDerecha">
+      <div class="barraArriba">
+        <div class="botonesArriba">
+          <button
+            id="botonRA"
+            class="botonito w3-bar-item w3-button"
+            onclick="getRutasAnteriores()"
+          >
+            Rutas
+          </button>
+          <button
+            id="botonLP"
+            class="botonito w3-bar-item w3-button w3-red"
+            onclick="listarPuntos()"
+          >
+            Puntos
+          </button>
+        </div>
+        <div id="listaPuntos" class="listaPuntos"></div>
+        <div id="rutasAnteriores" class="listaRutas"></div>
+      </div>
+      <hr class="solid" />
 
-    const agregarAMapa = (direc,locator) => {
-      const params = {
-      addresses: []};
-      const locatorUrl = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
-
-      params.addresses.push({
-          'objectid': direc.id,
-          'address': direc.direccion,
-      })
-      locator.addressesToLocations(locatorUrl, params).then(
-        (results) => {
-          if (results.length) {
-            
-            // results.forEach((result) =>  {
-            //   guardarDireccion(result);
-            //   actualizarMapa();
-            // });
-            var cortar=false;
-            for(var i=0;i<results.length;i++){
-              if(results[i].attributes.Country=="USA"&&!cortar){
-                cortar=true;
-                guardarDireccion(results[i]);
-                actualizarMapa();
-              }
-            }
-            console.log(direcciones);
-          }
-        },
-        function (error) {
-          console.log(error);
-        });
-    }
-    
-    var botonRutear = document.getElementById("botonRutear");
-    botonRutear.addEventListener("click", getRoute);
-    
-    function getRoute(evt) {
-      const routeParams = new RouteParameters({
-        stops: new FeatureSet({
-          features: view.graphics.toArray(),
-        }),
-        findBestSequence: true
-
-      });
-      
-      route.solve(routeUrl, routeParams)
-      .then(function(data) {    
-        console.log('routeParams',routeParams)
-        data.routeResults.forEach(async function(result) {
-          result.route.symbol = {
-            type: "simple-line",
-            color: [5, 150, 255],
-            width: 3
-          };
-          console.log('rooooo',routeParams.stops.features)
-var features= [
-    {
-      "attributes" : {
-        "req_id" : "508389",
-        "req_type" : "Graffiti Complaint - Public Property",
-        "req_date" : "09\/19\/2009",
-        "req_time" : "18:44",
-        "address" : "11TH ST and HARRISON ST",
-        "x_coord" : "6008925.0",
-        "y_coord" : "2108713.8",
-        "district" : "6",
-        "status" : 1
-      },
-      "geometry" : {
-        "x" : -122.41247978999991,
-        "y" : 37.770630098000083
-      }
-    }
-]
-                  const response = await fetch("https://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer/0/addFeatures", {
-                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                    mode: 'no-cors', // no-cors, *cors, same-origin
-                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                    credentials: 'same-origin', // include, *same-origin, omit
-                    headers: {
-                      'Content-Type': 'application/json',
-                      "Access-Control-Allow-Credentials": "true",
-                      "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
-                      "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
-                      // 'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    redirect: 'follow', // manual, *follow, error
-                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-                    body: {features : features} // body data type must match "Content-Type" header
-                  });        
-          //Traer Feature Service
-          console.log(response)
-          const ruta = new FeatureLayer({
-            url: "http://sampleserver5.arcgisonline.com/arcgis/rest/services/LocalGovernment/Events/FeatureServer"
-          });
-          map.add(ruta);
-
-          view.graphics.add(result.route);
-        });
-      });
-    }
-  });
-*/
-
-  </script>
-
-
-
-</head>
-<body>
-  
-  <div id="viewDiv">
-  </div>
-  <div class="barraDerecha">
-    <div class="barraArriba">
-    <div class = "botonesArriba">
-        <button id="botonRA" class="botonito w3-bar-item w3-button " onclick="getRutasAnteriores()">Rutas</button>
-        <button id="botonLP" class="botonito w3-bar-item w3-button w3-red" onclick="listarPuntos()">Puntos</button>
-  </div>
-    <div id="listaPuntos" class = "listaPuntos">
-      
+      <div class="barraAbajo">
+        <div class="botones">
+          <button
+            class="w3-button w3-deep-purple boton"
+            onclick="getRoute(view)"
+          >
+            Rutear
+          </button>
+          <button class="w3-button w3-deep-purple boton" onclick="simular()">
+            Simular ruta
+          </button>
+          <button class="w3-button w3-deep-purple boton" onclick="pdf()">
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+      <hr class="solid" />
+      <div class="barraCondado">
+        <div class="datosCondado">
+          <label>CONDADOS: </label><label id="nombreCondado"></label>
+        </div>
+        <div class="datosCondado">
+          <label>POBLACION: </label><label id="poblacionTotal"></label>
+        </div>
+      </div>
     </div>
-    <div id="rutasAnteriores" class = "listaRutas">
-      
-    </div>
-  </div>
-  <hr class="solid">
-
-  <div class="barraAbajo">
-
-    <div class= "botones">
-      <button class="w3-button w3-deep-purple boton" onclick="getRoute(view)">Rutear</button>
-      <button class="w3-button w3-deep-purple boton" onclick="simular()">Simular ruta</button>
-      <button class="w3-button w3-deep-purple boton" onclick="pdf()">Exportar PDF</button>
-
-    </div>
-  </div>
-  <hr class="solid">
-  <div class="barraCondado">
-    <div class="datosCondado">
-      <label>CONDADOS: </label><label id="nombreCondado"></label>
-    </div>
-    <div class="datosCondado">
-      <label>POBLACION: </label><label id="poblacionTotal"></label>
-    </div>
-  </div>
-</div>
-
-  
-</body>
+  </body>
 </html>
