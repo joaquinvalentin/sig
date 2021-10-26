@@ -10,8 +10,8 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
-    padding-left: 20px;
-    width: 90%;
+    padding-left:5px;
+    padding-right: 5px;
     flex-direction: row;
     flex-wrap: wrap;
 }
@@ -31,6 +31,7 @@
 }
 
 .boton{
+    margin: 1px
 }
 
 .busqueda {
@@ -81,8 +82,7 @@
 }
 
 .barraAbajo {
-    display: flex;
-    height: 8%;
+    align-items: center
 }
 
 .barraCondado {
@@ -112,8 +112,8 @@ border-top: 3px dotted #bbb;
 /* Solid border */
 hr.solid {
 border-top: 3px solid #bbb;
-margin-top: 30px;
-margin-bottom: 30px;
+margin-top: 10px;
+margin-bottom: 10px;
 
 }
 

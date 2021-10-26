@@ -160,7 +160,7 @@ require([
     "esri/layers/FeatureLayer",
   ], function(esriConfig,Map, MapView,locator,GraphicsLayer, Graphic, Search, route, RouteParameters, FeatureSet, FeatureLayer) {
   
-  esriConfig.apiKey = "AAPK336c7527d344421d8baba04844256a20StHFQ9s869HHuogrOW7BvVbfuOqM6eEJ-fqNf0WziAoV-rVTwJr07La2qCVA1_I_";
+  esriConfig.apiKey = "AAPK4c0161f8038c4300a89c8dc088b8103bq0TEZjgFLTxQ1qSE0JuXvvzFi3wKu5BC-bI8YIGdRUHtiN3lXoliwvHGC0sDvuUA";
   const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
   mapa = new Map({
       basemap: "arcgis-navigation"
@@ -401,11 +401,11 @@ function listarPuntos() {
 
 function pdf() {
   require(
-    ["esri/widgets/Print",
+    [
     "esri/rest/support/PrintTemplate",
     "esri/rest/support/PrintParameters",
     "esri/rest/print"
-    ], function(Print, PrintTemplate, PrintParameters, PrintAPI) {
+    ], function(PrintTemplate, PrintParameters, PrintAPI) {
 
     const url = "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
     
@@ -414,10 +414,10 @@ function pdf() {
       exportOptions: {
         dpi: 300
       },
-      layout: "a4-portrait",
+      layout: "a4-landscape",
       layoutOptions: {
         titleText: "SIG 2021 - Grupo 2",
-        authorText: "Nicolas Fripp \n Joaquin Valentin"
+        authorText: "Nicolas Fripp - Joaquin Valentin"
       }
     });
     
@@ -425,7 +425,7 @@ function pdf() {
       view: view,
       template: template
     });
-    
+
     PrintAPI.execute(url, params).then(res => window.open(res.url, '_blank').focus())
   })
 }
