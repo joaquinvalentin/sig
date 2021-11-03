@@ -351,7 +351,7 @@ async function cargarRuta(id) {
 }
 
 async function listarRutas(featuresIds) {
-  for (var i = 0; i < 1 /*featuresIds.length*/; i++) {
+  for (var i = 0; i < 4 /*featuresIds.length*/; i++) {
     var requestUrl = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/LocalGovernment/Recreation/FeatureServer/1/query?where=OBJECTID=${featuresIds[i]}&f=json`;
     var request = new XMLHttpRequest();
     request.open("GET", requestUrl, false);

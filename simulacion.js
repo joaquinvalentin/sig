@@ -2,10 +2,14 @@ var iterador = 20;
 var i = 0;
 var color = "green";
 var distanciaMedia = 0;
+var poblacionTotal = 0;
 
 function limpiarHTML() {
   document.getElementById("nombreCondado").innerHTML = "";
   document.getElementById("poblacionTotal").innerHTML = "";
+  document.getElementById("poblacionBuffer").innerHTML = "";
+  document.getElementById("areaBuffer").innerHTML = "";
+  document.getElementById("areaTotal").innerHTML = "";
 }
 
 function determinarColor(distanciaActual) {
@@ -36,6 +40,7 @@ async function simular() {
   i = 0;
   while (i + iterador < rutaSimulacion[0].length) {
     capaSimulacion.removeAll();
+    poblacionTotal=0;
     var distanciaActual =
       calcDistancia(
         rutaSimulacion[0][i][0],
@@ -56,7 +61,7 @@ async function simular() {
 }
 
 function dormir() {
-  return new Promise((resolve) => setTimeout(resolve, 10000));
+  return new Promise((resolve) => setTimeout(resolve, 60000));
 }
 //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
 function calcDistancia(lat1, lon1, lat2, lon2) {
@@ -160,7 +165,7 @@ function mapear() {
 
     dibujarCapaSimulacion(i);
     //creo buffer
-    var bufferRequestUrl = `http://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/buffer?geometries=${rutaSimulacion[0][i][0]},${rutaSimulacion[0][i][1]}&inSR=4326&outSR=4326&bufferSR=&distances=0.05&unit=&unionResults=false&geodesic=false&f=json`;
+    var bufferRequestUrl = `http://tasks.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/buffer?geometries=${rutaSimulacion[0][i][0]},${rutaSimulacion[0][i][1]}&inSR=4326&outSR=4326&bufferSR=&distances=0.04&unit=&unionResults=false&geodesic=false&f=json`;
     var requestBuffer = new XMLHttpRequest();
     requestBuffer.open("GET", bufferRequestUrl, false);
     requestBuffer.send(null);
@@ -173,6 +178,7 @@ function mapear() {
       url: "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_1990-2000_Population_Change/MapServer/3",
     });
     var poblacionesCondados = [];
+    var nombresCondados =[];
     var condados = [];
 
     //pinto buffer
@@ -189,13 +195,10 @@ function mapear() {
       for (var i = 0; i < response.features.length; i++) {
         pintarCondado(response.features[i].geometry.rings);
         var poblacion = response.features[i].attributes.TOTPOP_CY;
-        mostrarDatosCondadoOficial(
-          response.features[i].attributes.NAME,
-          poblacion
-        );
         poblacionesCondados.push(poblacion);
         var condado = new Polygon(response.features[i].geometry);
         condados.push({ rings: condado.rings });
+        nombresCondados.push(response.features[i].attributes.NAME);
       }
 
       var condadosAux = {
@@ -208,8 +211,9 @@ function mapear() {
           rings: anillo.rings,
         },
       };
+      //pondero el area.
       var bufferRequestUrl = `https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer/intersect`;
-      var params = `sr=4269&geometries=${JSON.stringify(
+      var params = `sr=4326&geometries=${JSON.stringify(
         condadosAux
       )}&geometry=${JSON.stringify(anilloAux)}&f=pjson`;
       var requestBuffer = new XMLHttpRequest();
@@ -219,28 +223,53 @@ function mapear() {
         "application/x-www-form-urlencoded"
       );
       requestBuffer.send(params);
+      var areaIntersectada = 0;
+      var areaCondados = 0;
+      var poblacionCondado = 0;
       if (requestBuffer.status === 200) {
         var response = JSON.parse(requestBuffer.response);
+        console.log('respuesta', response);
+        for (let j = 0; j < response.geometries[0].rings.length; j++) {
+          //paintPolygon(results[i].rings);
+          var poligonoInterseccion = new Polygon(response.geometries[0].rings[j]);
+          var poligonoCondado = new Polygon(condados[j].rings);
+          var areasAndLengthParams = new AreasAndLengthsParameters({
+             areaUnit: "square-kilometers",
+             lengthUnit: "kilometers",
+             polygons: [poligonoInterseccion,poligonoCondado]
+           });
+           console.log(areasAndLengthParams);
+           geometryService.areasAndLengths("https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer",areasAndLengthParams).then(function(results){
+            console.log('pua',results);
+            areaIntersectada = results.areas[0];
+            areaCondado = results.areas[1];
+            console.log('iiii', j);
+            console.log('ooo', poblacionesCondados[j]);
+            poblacionCondado= parseInt(poblacionesCondados[j]);
+            var indicePonderacion = parseFloat(areaIntersectada) / parseFloat(areaCondado) ;
+            console.log('poblacion condado: ' , poblacionCondado);
+            console.log('indice ponderacion: ', indicePonderacion);
+            mostrarDatosCondadoOficial(nombresCondados[j], Math.ceil(indicePonderacion * poblacionCondado), poblacionCondado, areaCondado.toFixed(2),areaIntersectada.toFixed(2))
+          });
+        }
       }
     });
   });
 }
 
-function mostrarDatosCondadoOficial(nombre, poblacion) {
-  var suma;
-  if (document.getElementById("poblacionTotal").innerHTML == "NaN") {
-    suma = poblacion;
-  } else {
-    suma =
-      parseInt(document.getElementById("poblacionTotal").innerHTML) +
-      parseInt(poblacion);
-  }
-  var suma = (
-    parseInt(poblacion) +
-    parseInt(document.getElementById("poblacionTotal").innerHTML)
-  ).toString();
+
+function mostrarDatosCondadoOficial(nombre, poblacionBuffer, poblacionCondado, areaCond, areaBuffer) {
+
   document.getElementById("nombreCondado").innerHTML =
     nombre + " / " + document.getElementById("nombreCondado").innerHTML;
   document.getElementById("poblacionTotal").innerHTML =
-    poblacion + " / " + document.getElementById("poblacionTotal").innerHTML;
+    poblacionCondado + " / " + document.getElementById("poblacionTotal").innerHTML;
+    document.getElementById("areaTotal").innerHTML =
+    areaCond + " / " + document.getElementById("areaTotal").innerHTML;
+
+    document.getElementById("areaBuffer").innerHTML =
+    areaBuffer + " / " + document.getElementById("areaBuffer").innerHTML;
+
+    document.getElementById("poblacionBuffer").innerHTML =
+    poblacionBuffer + " / " + document.getElementById("poblacionBuffer").innerHTML;
 }
